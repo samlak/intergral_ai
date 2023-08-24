@@ -167,6 +167,9 @@ export default function Background() {
                     {...field}
                   />
                 </FormControl>
+                <FormDescription>
+                  You can rephrase and expand your input with AI by clicking on the button above
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

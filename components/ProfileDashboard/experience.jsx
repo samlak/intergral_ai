@@ -385,7 +385,7 @@ export default function Experience() {
               Add Experience
             </Button>
           </div>
-          <Button type="submit">Save Info</Button>
+          <Button type="submit">Save Experience</Button>
         </form>
       </Form>
       </CardContent>

@@ -1,6 +1,8 @@
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import Layout from "@/components/Layout";
+import { Button } from "@/components/ui/button"
+import { ClientsData, Analytics, ChatSession } from "@/components/UserDashboard"
 
 export default function Dashboard() {
 
@@ -11,19 +13,36 @@ export default function Dashboard() {
       </Head>
       <div>
         <Layout activeTab="Dashboard"> 
-          <main className="text-center">
-            <h1 className="text-3xl font-semibold">
-              Connect with Investor
-            </h1>
-            <p className="mt-1">
-              You can raise money easily using Startup Assistant. You will be connected to investor that invest in your industry.
-            </p>
+          <main className="">
+            <section className="mb-10">
+              <div className="mb-2">
+                <h2 className="text-lg font-bold">
+                  Dashboard
+                </h2>
+              </div>
 
-            <p className="text-center mt-10 font-medium text-2xl">Coming Soon</p>
+              <Analytics />
+            </section>
 
-            {/* <div className="mt-5 mb-7 py-8 max-w-xl mx-auto rounded-lg border bg-card text-card-foreground shadow-sm">
-   
-            </div> */}
+            <section className="mb-10">
+              <div className="mb-2">
+                <h2 className="text-lg font-bold">
+                  Client
+                </h2>
+              </div>
+
+              <ClientsData />
+            </section>
+
+            <section className="mb-10">
+              <div className="mb-2">
+                <h2 className="text-lg font-bold">
+                  Chat Session
+                </h2>
+              </div>
+
+              <ChatSession />
+            </section>
           </main>
         </Layout>
       </div>

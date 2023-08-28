@@ -6,7 +6,6 @@ import { QuestionInput } from "./QuestionInput";
 import { 
   MessagesSquare,
   X,
-  Send
 } from "lucide-react";
 import {
   Card,

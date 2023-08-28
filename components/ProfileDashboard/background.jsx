@@ -132,7 +132,10 @@ export default function Background() {
                   <Input placeholder="thejohn" {...field} />
                 </FormControl>
                 <FormDescription>
-                  This is your public display name. It can be your real name or a pseudonym.
+                  This is the link to your Indielance profile. {" "}
+                  <span className="text-blue-500 font-bold">
+                    {`https://indielance.co/${field.value}`}
+                  </span>
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -198,12 +201,12 @@ export default function Background() {
                 Add links to your github, behance, blog, or social media profiles.
               </FormDescription>
               {linkFields.map((field, index) => (
-                <div key={field.id} className="flex items-center space-x-3">
+                <div key={field.id} className="flex items-center flex-wrap sm:flex-nowrap sm:space-x-3">
                   <FormField
                     control={form.control}
                     name={`external_links.${index}.url`}
                     render={({ field }) => (
-                      <div className="w-1/2">
+                      <div className="w-full sm:w-1/2">
                         <FormLabel>
                           URL
                         </FormLabel>
@@ -223,7 +226,7 @@ export default function Background() {
                     control={form.control}
                     name={`external_links.${index}.text`}
                     render={({ field }) => (
-                      <div className="w-1/2">
+                      <div className="w-full sm:w-1/2 mt-2 sm:mt-0">
                         <FormLabel>
                           Text
                         </FormLabel>

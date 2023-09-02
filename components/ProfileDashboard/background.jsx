@@ -61,13 +61,43 @@ export default function Background() {
   });
   
   const defaultValues = {
-    name: "",
-    username: "",
-    title: "",
-    bio: "",
-    calender_link: "",
-    external_links: [],
-    skillsets: [],
+    name: "Haruna Salami",
+    username: "devsamlak",
+    title: "Software Developer",
+    bio: "I am an accomplished software developer with a proven track record of over 5 years in the industry. My expertise spans a wide spectrum of programming languages, technologies, and development methodologies, enabling me to create robust and efficient software solutions that meet the most demanding requirements. Throughout my career, I have consistently demonstrated a deep understanding of software architecture, design patterns, and best practices, allowing me to deliver scalable and maintainable codebases. My passion for innovation and problem-solving is evident in my ability to tackle complex challenges head-on and devise elegant solutions. Whether I am collaborating within a team or taking the lead on projects, I thrive on fostering an environment of open communication and knowledge sharing. My adaptability and continuous learning mindset have enabled me to stay at the forefront of technological advancements, ensuring that the software I develop remains cutting-edge and aligned with industry trends. With a keen eye for detail and a commitment to quality, I take pride in my contributions to the software development landscape and look forward to leveraging my skills to drive impactful and transformative projects in the future.",
+    calender_link: "https://calendly.com/devsamlak",
+    external_links: [
+      {
+        url: "https://.com/devsamlak",
+        text: "Github" 
+      },
+      {
+        url: "https://binnace.com/devsamlak",
+        text: "Binnace" 
+      },
+      {
+        url: "https://linkedin.com/devsamlak",
+        text: "LinkedIn" 
+      },
+      {
+        url: "https://twitter.com/devsamlak",
+        text: "Twitter" 
+      },
+    ],
+    skillsets: [
+      "Javascript",
+      "HTML",
+      "CSS",
+      "Prompt Engineering",
+      "Chatbot Development",
+      "React",
+      "Node.js",
+      "Python",
+      "Java",
+      "C#",
+      "C++",
+      "Ruby",
+    ],
   }
 
   const form = useForm({
@@ -134,7 +164,7 @@ export default function Background() {
                 <FormDescription>
                   This is the link to your Indielance profile. {" "}
                   <span className="text-blue-500 font-bold">
-                    {`https://indielance.co/${field.value}`}
+                    {`https://indielance.co/pro/${field.value}`}
                   </span>
                 </FormDescription>
                 <FormMessage />

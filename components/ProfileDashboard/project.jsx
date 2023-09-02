@@ -80,11 +80,17 @@ export default function Project() {
 
   const defaultValues ={
     projects: [{
-      project_title: "", 
-      project_link: "", 
-      start_date: "", 
-      end_date: "",
-      description: "" 
+      project_title: "Health Tracker App", 
+      project_link: "https://healthtrackerapp.com", 
+      start_date: {
+        month: "April",
+        year: "2020"
+      }, 
+      end_date: {
+        month: "November",
+        year: "2020"
+      },
+      description: "As the lead developer, I created a comprehensive health tracker app that empowered users to monitor their fitness goals. Developed a user-friendly interface, implemented real-time data synchronization, and integrated wearable device support. The app garnered positive user feedback and became a go-to tool for health enthusiasts." 
     }]
   }
 
@@ -101,12 +107,15 @@ export default function Project() {
 
   function onSubmit(data) {
     toast({
-      title: "You submitted the following values:",
+      title: "Profile created successfully!",
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+        <p>
+          You can check your profile here {" "}
+          <a className="text-blue-600" href="http://localhost:3000/pro/devsamlak">
+            https://indielance.co/pro/devsamlak
+          </a>
+        </p>
+      )
     })
   }
 

@@ -9,21 +9,86 @@ import { Label } from "@/components/ui/label"
 import { 
   Loader2,
 } from "lucide-react"
+import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
+import { toast } from "@/components/ui/use-toast";
+import { redirectLink } from "@/config/data";
+import GoogleLogin from "./google-login";
 
 
-export function LoginForm({ className, ...props }) {
+export function RegisterForm({ className, ...props }) {
+  const router = useRouter();
+  const { query } = useRouter();
   const [isLoading, setIsLoading] = useState(false)
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    name: ""
+  });
+
+  const handleFormChange = (event) => {
+    event.target.name;
+    setForm({
+      ...form,
+      [event.target.name]: event.target.value,
+    });
+  };
 
   async function onSubmit(event) {
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    };
+
+    await fetch("/api/auth/signup", options)
+    .then((res) => res.json())
+    .then(async (data) => {
+      if (data.status) {
+        const status = await signIn("credentials", {
+          email: form.email,
+          password: form.password,
+          redirect: false,
+          callbackUrl: query.redirect_page ? query.redirect_page : redirectLink,
+        });
+    
+        if (status.ok) {
+          setIsLoading(false);
+          router.push(status.url);
+        } else {
+          setIsLoading(false);
+          toast({
+            title: "Login is unsuccessful!",
+            description: (
+              <p>{status.error}</p>
+            )
+          })
+        }
+      } else {
+        setIsLoading(false);
+        toast({
+          title: "Registration is unsuccessful!",
+          description: (
+            <p>{data.error}</p>
+          )
+        })
+      }
+    })
   }
 
   const formElement = [
+    {
+      label: "Name",
+      id: "name",
+      placeholder: "Jone Doe",
+      type: "text",
+      autoCapitalize: "none",
+      autoComplete: "name",
+      autoCorrect: "off"
+    },
     {
       label: "Email",
       id: "email",
@@ -55,12 +120,14 @@ export function LoginForm({ className, ...props }) {
               </Label>
               <Input
                 id={options.id}
+                name={options.id}
                 placeholder={options.placeholder}
                 type={options.type}
                 autoCapitalize={options.autoCapitalize}
                 autoComplete={options.autoComplete}
                 autoCorrect={options.autoCorrect}
                 disabled={isLoading}
+                onChange={handleFormChange}
               />
             </div>
           ))}
@@ -68,7 +135,7 @@ export function LoginForm({ className, ...props }) {
             {isLoading && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Log In
+            Register
           </Button>
         </div>
       </form>
@@ -82,7 +149,9 @@ export function LoginForm({ className, ...props }) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      
+      <GoogleLogin redirectLink={query.redirect_page ? query.redirect_page : redirectLink} />
+      {/* <Button variant="outline" type="button" disabled={isLoading}>
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : (
@@ -102,7 +171,7 @@ export function LoginForm({ className, ...props }) {
           </svg>
         )}{" "}
         Google
-      </Button>
+      </Button> */}
     </div>
   )
 }

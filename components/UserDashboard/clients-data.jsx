@@ -64,8 +64,8 @@ export default function ClientsData() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {clients.map((client) => (
-            <TableRow key={client.name}>
+          {clients.map((client, index) => (
+            <TableRow key={index}>
               <TableCell className="font-medium">{client.name}</TableCell>
               <TableCell>{client.email}</TableCell>
               <TableCell>

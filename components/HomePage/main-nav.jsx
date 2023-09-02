@@ -2,7 +2,6 @@ import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button";
-import { UserNav } from "@/components/Layout/components/user-nav"
 
 import { 
   Briefcase, 
@@ -17,10 +16,6 @@ export function MainNav() {
       title: "Features",
       href: "/#features",
     },
-    {
-      title: "Pricing",
-      href: "/pricing",
-    }
   ]
 
   return (
@@ -95,7 +90,6 @@ export function MainNav() {
         >
           Login
         </Link>
-        {/* <UserNav /> */}
       </nav>
     </>
   )

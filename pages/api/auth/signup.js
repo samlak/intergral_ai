@@ -9,8 +9,7 @@ export default async function handler(req, res){
     if(req.method === 'POST'){
 
         if(!req.body) return res.status(404).json({ status : false, error: "Empty data provided."});
-        const { firstName, lastName, email, password } = req.body;
-        const name = `${firstName} ${lastName}`;
+        const { name, email, password } = req.body;
 
         // check duplicate users
         const checkexisting = await Users.findOne({ email });
@@ -18,12 +17,12 @@ export default async function handler(req, res){
 
         // hash password
         if(checkexisting && !checkexisting.password){
-            Users.findByIdAndUpdate(checkexisting._id, { name, firstName, lastName, email, password : await hash(password, 12)}, function(error, data){
+            Users.findByIdAndUpdate(checkexisting._id, { name, email, password : await hash(password, 12)}, function(error, data){
                 if(error) return res.status(404).json({ status : false, error });
                 res.status(201).json({ status : true, user: data})
             })
         } else {
-            Users.create({ name, firstName, lastName, email, password : await hash(password, 12)}, async function(error, data){
+            Users.create({ name, email, password : await hash(password, 12)}, async function(error, data){
                 if(error) return res.status(404).json({ status : false, error });
                 res.status(201).json({ status : true, user: data})
             })

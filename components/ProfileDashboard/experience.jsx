@@ -81,12 +81,18 @@ export default function Experience() {
 
   const defaultValues ={
     experiences: [{
-      job_title: "", 
-      company_name: "",
-      company_link: "", 
-      start_date: "", 
-      end_date: "",
-      description: "" 
+      job_title: "Lead Developer", 
+      company_name: "CodeCrafters Co.",
+      company_link: "https://codecrafters.com", 
+      start_date: {
+        month: "June",
+        year: "2019"
+      }, 
+      end_date: {
+        month: "January",
+        year: "2021"
+      },
+      description: "I served as the lead developer, overseeing the entire software development lifecycle from concept to deployment. I led a talented team in the design and implementation of complex software solutions. My leadership resulted in improved code quality and faster project delivery through the adoption of modern development practices." 
     }]
   }
 

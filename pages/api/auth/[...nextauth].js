@@ -52,11 +52,11 @@ export default NextAuth({
         await connectMongo().catch((error) => {
           throw new Error("Connection Failed...!");
         });
-        const { name, given_name, family_name, email } = profile;
+        const { name, email } = profile;
         const checkIfUserExist = await Users.findOne({ email });
 
         if(!checkIfUserExist) {
-          Users.create({ name, firstName: given_name, lastName: family_name,  email, password : null}, async function(error, data){
+          Users.create({ name, email, password : null}, async function(error, data){
             if(error) return false;
           })
         }

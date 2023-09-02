@@ -33,7 +33,7 @@
     "components/Layout/index.jsx", 
     "components/Layout/components/sidebar.jsx", 
     "components/Layout/components/user-nav.jsx"  
-, "components/HomePage/main-nav.jsx", "components/HomePage/layout.jsx"  ],
+, "components/HomePage/main-nav.jsx", "components/HomePage/layout.jsx", "middlewarec.js", "pages/sign-up/[[...sign-up]]/page.tsx", "components/Auth/login-form.jsx", "components/Auth/register-form.jsx"  ],
   "exclude": [
     "node_modules"
   ]

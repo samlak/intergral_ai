@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,30 +8,55 @@ import { Label } from "@/components/ui/label"
 import { 
   Loader2,
 } from "lucide-react"
+import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
+import { toast } from "@/components/ui/use-toast";
+import { redirectLink } from "@/config/data";
+import GoogleLogin from "./google-login";
 
 
-export function RegisterForm({ className, ...props }) {
+export function LoginForm({ className, ...props }) {
+  const router = useRouter();
+  const { query } = useRouter();
   const [isLoading, setIsLoading] = useState(false)
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleFormChange = (event) => {
+    event.target.name;
+    setForm({
+      ...form,
+      [event.target.name]: event.target.value,
+    });
+  };
 
   async function onSubmit(event) {
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    const status = await signIn("credentials", {
+      ...form,
+      redirect: false,
+      callbackUrl: query.redirect_page ? query.redirect_page : redirectLink,
+    });
+
+    if (status.ok) {
+      setIsLoading(false);
+      router.push(status.url);
+    } else {
+      setIsLoading(false);
+      toast({
+        title: "Login is unsuccessful!",
+        description: (
+          <p>{status.error}</p>
+        )
+      })
+    }
   }
 
   const formElement = [
-    {
-      label: "Name",
-      id: "name",
-      placeholder: "Jone Doe",
-      type: "text",
-      autoCapitalize: "none",
-      autoComplete: "name",
-      autoCorrect: "off"
-    },
     {
       label: "Email",
       id: "email",
@@ -64,12 +88,14 @@ export function RegisterForm({ className, ...props }) {
               </Label>
               <Input
                 id={options.id}
+                name={options.id}
                 placeholder={options.placeholder}
                 type={options.type}
                 autoCapitalize={options.autoCapitalize}
                 autoComplete={options.autoComplete}
                 autoCorrect={options.autoCorrect}
                 disabled={isLoading}
+                onChange={handleFormChange}
               />
             </div>
           ))}
@@ -77,7 +103,7 @@ export function RegisterForm({ className, ...props }) {
             {isLoading && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Register
+            Log In
           </Button>
         </div>
       </form>
@@ -91,7 +117,9 @@ export function RegisterForm({ className, ...props }) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+
+      <GoogleLogin redirectLink={query.redirect_page ? query.redirect_page : redirectLink} />
+      {/* <Button variant="outline" type="button" disabled={isLoading}>
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : (
@@ -111,7 +139,7 @@ export function RegisterForm({ className, ...props }) {
           </svg>
         )}{" "}
         Google
-      </Button>
+      </Button> */}
     </div>
   )
 }

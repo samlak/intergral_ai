@@ -1,25 +1,25 @@
 import { Schema, model, models } from 'mongoose';
 
-const askSchema = new Schema({
+const clientSchema = new Schema({
 	user: {
 		type: Schema.Types.ObjectId,
 		ref: 'user',
 	},
-    projectName: {
+  name: {
 		type: String,
 		required: true,
 		trim: true
 	},
-    serviceOffering : {
+  email : {
 		type: String,
-	},
-    targetCustomer : {
-		type: String,
-	},
+		unique: true,
+		required: true,
+		lowercase: true,
+	}
 }, {
 	timestamps: true
 });
 
-const Asks = models.ask || model('ask', askSchema);
+const Clients = models.client || model('client', clientSchema);
 
-export default Asks;
+export default Clients;

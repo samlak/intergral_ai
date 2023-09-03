@@ -42,6 +42,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { Loader2 } from "lucide-react"
 
 const calendar = [
   "January",
@@ -58,7 +61,10 @@ const calendar = [
   "December"
 ];
 
-export default function Experience() {
+export default function Experience({ profileData }) {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+
   const profileFormSchema = z.object({
     experiences: z
       .array(
@@ -79,26 +85,9 @@ export default function Experience() {
       )
   });
 
-  const defaultValues ={
-    experiences: [{
-      job_title: "Lead Developer", 
-      company_name: "CodeCrafters Co.",
-      company_link: "https://codecrafters.com", 
-      start_date: {
-        month: "June",
-        year: "2019"
-      }, 
-      end_date: {
-        month: "January",
-        year: "2021"
-      },
-      description: "I served as the lead developer, overseeing the entire software development lifecycle from concept to deployment. I led a talented team in the design and implementation of complex software solutions. My leadership resulted in improved code quality and faster project delivery through the adoption of modern development practices." 
-    }]
-  }
-
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: profileData,
     mode: "onChange",
   })
 
@@ -107,15 +96,39 @@ export default function Experience() {
     control: form.control,
   })
 
-  function onSubmit(data) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  async function onSubmit(data) {
+    await fetch("/api/profile/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data,
+        profileId: profileData._id,
+      }),
     })
+    .then((res) => res.json())
+    .then(async (response) => {
+      setIsLoading(false);
+      if (response.status) {
+        toast({
+          title: "Submitted successfully",
+          description: <p>Your data as been submitted successfully. Proceed to complete your profile.</p>,
+        })
+      } else {
+        toast({
+          title: "Submission unsuccessful",
+          description: <p>Error occured while submitting your data. Please try again!</p>,
+        })
+      }
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      toast({
+        title: "Submission unsuccessful",
+        description: <p>Error occured while submitting your data. Please try again!</p>,
+      })
+    });
   }
 
   return (
@@ -391,7 +404,15 @@ export default function Experience() {
               Add Experience
             </Button>
           </div>
-          <Button type="submit">Save Experience</Button>
+          <Button type="submit">
+            {isLoading && (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {" "}
+              </>
+            )}
+            Save Experience
+          </Button>
         </form>
       </Form>
       </CardContent>

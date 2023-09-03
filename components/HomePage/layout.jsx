@@ -15,7 +15,7 @@ export default function HomePageLayout({ showFooter = true, children }) {
       </main>
       {showFooter &&
         <footer>
-          <div className="container flex flex-col items-center justify-between mb-10 -mt-10">
+          <div className="container flex flex-col items-center justify-between mb-10 md:-mt-10">
             <p className="text-center text-base leading-loose">
               For feedback contact us through {" "}
               <a

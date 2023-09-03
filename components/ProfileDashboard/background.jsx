@@ -22,9 +22,16 @@ import {
   FormMessage,
 } from "@/components/react-hook-form/form"
 import { RemoveableInput, GenerativeTextarea } from "@/components/Form"
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { Loader2 } from "lucide-react"
 
-export default function Background() {
+export default function Background({ profileData, setIsNewProfile }) {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+
   const profileFormSchema = z.object({
+    // image: z.string(),
     name: z.string().min(1, { 
       message: "Your name is required.",
     }),
@@ -59,50 +66,10 @@ export default function Background() {
       )
       .optional(),
   });
-  
-  const defaultValues = {
-    name: "Haruna Salami",
-    username: "devsamlak",
-    title: "Software Developer",
-    bio: "I am an accomplished software developer with a proven track record of over 5 years in the industry. My expertise spans a wide spectrum of programming languages, technologies, and development methodologies, enabling me to create robust and efficient software solutions that meet the most demanding requirements. Throughout my career, I have consistently demonstrated a deep understanding of software architecture, design patterns, and best practices, allowing me to deliver scalable and maintainable codebases. My passion for innovation and problem-solving is evident in my ability to tackle complex challenges head-on and devise elegant solutions. Whether I am collaborating within a team or taking the lead on projects, I thrive on fostering an environment of open communication and knowledge sharing. My adaptability and continuous learning mindset have enabled me to stay at the forefront of technological advancements, ensuring that the software I develop remains cutting-edge and aligned with industry trends. With a keen eye for detail and a commitment to quality, I take pride in my contributions to the software development landscape and look forward to leveraging my skills to drive impactful and transformative projects in the future.",
-    calender_link: "https://calendly.com/devsamlak",
-    external_links: [
-      {
-        url: "https://.com/devsamlak",
-        text: "Github" 
-      },
-      {
-        url: "https://binnace.com/devsamlak",
-        text: "Binnace" 
-      },
-      {
-        url: "https://linkedin.com/devsamlak",
-        text: "LinkedIn" 
-      },
-      {
-        url: "https://twitter.com/devsamlak",
-        text: "Twitter" 
-      },
-    ],
-    skillsets: [
-      "Javascript",
-      "HTML",
-      "CSS",
-      "Prompt Engineering",
-      "Chatbot Development",
-      "React",
-      "Node.js",
-      "Python",
-      "Java",
-      "C#",
-      "C++",
-      "Ruby",
-    ],
-  }
 
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: profileData,
     mode: "onChange",
   })
 
@@ -116,15 +83,78 @@ export default function Background() {
     control: form.control,
   })
 
-  function onSubmit(data) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+  async function onSubmit (data) {
+    setIsLoading(true);
+
+    if(profileData && profileData._id ) {
+      await fetch("/api/profile/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data,
+          profileId: profileData._id,
+        }),
+      })
+      .then((res) => res.json())
+      .then(async (response) => {
+        setIsLoading(false);
+        if (response.status) {
+          toast({
+            title: "Submitted successfully",
+            description: <p>Your data as been submitted successfully. Proceed to complete your profile.</p>,
+          })
+        } else {
+          toast({
+            title: "Submission unsuccessful",
+            description: <p>Error occured while submitting your data. Please try again!</p>,
+          })
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        toast({
+          title: "Submission unsuccessful",
+          description: <p>Error occured while submitting your data. Please try again!</p>,
+        })
+      });
+    } else {
+      await fetch("/api/profile/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data,
+          email: session.user.email,
+        }),
+      })
+      .then((res) => res.json())
+      .then(async (response) => {
+        setIsLoading(false);
+        setIsNewProfile(false);
+        if (response.status) {
+          toast({
+            title: "Submitted successfully",
+            description: <p>Your data as been submitted successfully. Proceed to complete your profile.</p>,
+          })
+        } else {
+          toast({
+            title: "Submission unsuccessful",
+            description: <p>Error occured while submitting your data. Please try again!</p>,
+          })
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        toast({
+          title: "Submission unsuccessful",
+          description: <p>Error occured while submitting your data. Please try again!</p>,
+        })
+      });
+    }
+
   }
 
   return (
@@ -138,6 +168,20 @@ export default function Background() {
       <CardContent className="space-y-2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {/* <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Profile Picture</FormLabel>
+                <FormControl className="max-w-[300px]">
+                  <Input type="file" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+
           <FormField
             control={form.control}
             name="name"
@@ -324,7 +368,15 @@ export default function Background() {
             </Button>
           </div>
         
-          <Button type="submit">Save Info</Button>
+          <Button type="submit">
+            {isLoading && (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {" "}
+              </>
+            )}
+            Save Info
+          </Button>
         </form>
       </Form>
       </CardContent>

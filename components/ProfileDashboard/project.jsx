@@ -42,6 +42,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { Loader2 } from "lucide-react"
+import { customUrl } from "@/lib/url";
 
 const calendar = [
   "January",
@@ -58,7 +62,10 @@ const calendar = [
   "December"
 ];
 
-export default function Project() {
+export default function Project({ profileData }) {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+
   const profileFormSchema = z.object({
     projects: z
       .array(
@@ -78,25 +85,9 @@ export default function Project() {
       )
   });
 
-  const defaultValues ={
-    projects: [{
-      project_title: "Health Tracker App", 
-      project_link: "https://healthtrackerapp.com", 
-      start_date: {
-        month: "April",
-        year: "2020"
-      }, 
-      end_date: {
-        month: "November",
-        year: "2020"
-      },
-      description: "As the lead developer, I created a comprehensive health tracker app that empowered users to monitor their fitness goals. Developed a user-friendly interface, implemented real-time data synchronization, and integrated wearable device support. The app garnered positive user feedback and became a go-to tool for health enthusiasts." 
-    }]
-  }
-
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: profileData,
     mode: "onChange",
   })
 
@@ -105,18 +96,46 @@ export default function Project() {
     control: form.control,
   })
 
-  function onSubmit(data) {
-    toast({
-      title: "Profile created successfully!",
-      description: (
-        <p>
-          You can check your profile here {" "}
-          <a className="text-blue-600" href="http://localhost:3000/pro/devsamlak">
-            https://indielance.co/pro/devsamlak
-          </a>
-        </p>
-      )
+  async function onSubmit(data) {
+    await fetch("/api/profile/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data,
+        profileId: profileData._id,
+      }),
     })
+    .then((res) => res.json())
+    .then(async (response) => {
+      setIsLoading(false);
+      if (response.status) {
+        toast({
+          title: "Submitted successfully",
+          description: (
+            <p>
+              Your profile has been completed. Check your profile here {" "}
+              <a href={`/pro/${profileData.username}`} className="text-blue-500 font-bold">
+                {`https://indielance.co/pro/${profileData.username}`}
+              </a>
+            </p>
+          ),
+        })
+      } else {
+        toast({
+          title: "Submission unsuccessful",
+          description: <p>Error occured while submitting your data. Please try again!</p>,
+        })
+      }
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      toast({
+        title: "Submission unsuccessful",
+        description: <p>Error occured while submitting your data. Please try again!</p>,
+      })
+    });
   }
 
   return (
@@ -242,7 +261,7 @@ export default function Project() {
                               <FormLabel
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                I am currently working in this project
+                                I am currently working on this project
                               </FormLabel>
                             </div>
                           </FormControl>
@@ -377,7 +396,15 @@ export default function Project() {
               Add Project
             </Button>
           </div>
-          <Button type="submit">Save Project</Button>
+          <Button type="submit">
+            {isLoading && (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {" "}
+              </>
+            )}
+            Save Project
+          </Button>
         </form>
       </Form>
       </CardContent>

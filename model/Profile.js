@@ -4,6 +4,7 @@ const profileSchema = new Schema({
 	user: {
 		type: Schema.Types.ObjectId,
 		ref: 'user',
+		unique: true
 	},
   name: {
 		type: String,
@@ -30,11 +31,11 @@ const profileSchema = new Schema({
 		blackbox: true,
 	},
   experiences: {
-		type: [Array],
+		type: [Object],
 		blackbox: true,
 	},
   projects: {
-		type: [Array],
+		type: [Object],
 		blackbox: true,
 	}
 }, {

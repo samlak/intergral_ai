@@ -6,6 +6,9 @@ const profileSchema = new Schema({
 		ref: 'user',
 		unique: true
 	},
+  image: {
+		type: String,
+	},
   name: {
 		type: String,
 	},

@@ -1,3 +1,5 @@
+import React, { useEffect } from 'react';
+
 import {
   Card,
   CardContent,
@@ -21,17 +23,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/react-hook-form/form"
-import { RemoveableInput, GenerativeTextarea } from "@/components/Form"
+import { RemoveableInput, GenerativeTextarea, FileController } from "@/components/Form"
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Loader2 } from "lucide-react"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 
 export default function Background({ profileData, setIsNewProfile }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
   const profileFormSchema = z.object({
-    // image: z.string(),
+    image: z.string().nullable(),
     name: z.string().min(1, { 
       message: "Your name is required.",
     }),
@@ -154,8 +161,9 @@ export default function Background({ profileData, setIsNewProfile }) {
         })
       });
     }
-
   }
+
+  
 
   return (
     <Card>
@@ -168,19 +176,44 @@ export default function Background({ profileData, setIsNewProfile }) {
       <CardContent className="space-y-2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* <FormField
+          <FileController
             control={form.control}
             name="image"
-            render={({ field }) => (
+            defaultValue={profileData.image ? new File([], profileData.image) : ""}
+            render={({ field, base64, remove }) => (
               <FormItem>
                 <FormLabel>Profile Picture</FormLabel>
-                <FormControl className="max-w-[300px]">
-                  <Input type="file" {...field} />
-                </FormControl>
+                
+                { base64 ? (
+                  <>
+                    <Avatar className="w-40 h-28 mb-2 rounded-md">
+                      <AvatarImage 
+                        className=""
+                        src={base64} 
+                        alt="Profile Picture" 
+                      />
+                      <AvatarFallback className="text-7xl rounded-md">&nbsp;</AvatarFallback>
+                    </Avatar>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      onClick={remove}
+                    >
+                      Remove Picture
+                    </Button>
+                  </>
+                ) : (
+                  <FormControl className="max-w-[200px]">
+                    <Input {...field} />
+                  </FormControl>
+                )}
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
 
           <FormField
             control={form.control}

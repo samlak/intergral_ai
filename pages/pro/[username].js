@@ -3,10 +3,11 @@ import Head from "next/head";
 import Layout from "@/components/HomePage/layout";
 import Chatbot from "@/components/Chatbot";
 import { About, Experience, Info, Project, Footer } from "@/components/Profile";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
+import { customUrl } from "@/lib/url";
+import Link from "next/link"
 
-
-const Home = () => {
+export default function ProfilePage({ profileData }) {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
   return (
     <>
@@ -14,27 +15,65 @@ const Home = () => {
         <title>Profile | Indielance</title>
       </Head>
       <Layout showFooter={false}>
-        <Info setIsChatbotOpen={setIsChatbotOpen} />
-        <Separator />
+        {profileData ? 
+          <>
+            <Info profileData={profileData} setIsChatbotOpen={setIsChatbotOpen} />
+            <Separator />
 
-        <About />
-        <Separator />
+            <About profileData={profileData} />
+            <Separator />
 
-        <Experience />
-        <Separator />
+            <Experience profileData={profileData} />
+            <Separator />
 
-        <Project />
+            <Project profileData={profileData} />
 
-        <Footer />
+            <Footer />
 
-        <Chatbot
-          isChatbotOpen={isChatbotOpen}
-          setIsChatbotOpen={setIsChatbotOpen}
-        />
+            <Chatbot
+              profileData={profileData}
+              isChatbotOpen={isChatbotOpen}
+              setIsChatbotOpen={setIsChatbotOpen}
+            />
+          </>
+          : 
+          <p className="my-10 text-center">
+            Profile can not be found. You can create your own {" "}
+            <Link href="/" className="text-blue-500 font-bold underline">
+              profile here
+            </Link>
+          </p>
+        }
 
       </Layout>
     </>
   );
 };
 
-export default Home;
+
+
+export async function getServerSideProps({ req, params }) {
+  const { username } = params;
+
+  let profileData;
+  
+  await fetch(customUrl("/api/profile/get"), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ 
+      search: { username }
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    profileData = data.data;
+  });
+
+  return {
+    props: { 
+      profileData
+    },
+  };
+}

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { buttonVariants, Button } from "@/components/ui/button";import {
+import { buttonVariants, Button } from "@/components/ui/button";
+import {
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -9,26 +10,7 @@ import { buttonVariants, Button } from "@/components/ui/button";import {
 import Skill from "./skill"
 
 
-export default function Info({ setIsChatbotOpen }) { 
-  const linkOptions = [
-    {
-      url: "/",
-      text: "Github" 
-    },
-    {
-      url: "/",
-      text: "Binnace" 
-    },
-    {
-      url: "/",
-      text: "LinkedIn" 
-    },
-    {
-      url: "/",
-      text: "Twitter" 
-    },
-  ] 
-  
+export default function Info({ profileData, setIsChatbotOpen }) {   
   const openChatbot = () => setIsChatbotOpen(true);
 
   return (
@@ -38,15 +20,15 @@ export default function Info({ setIsChatbotOpen }) {
           <Avatar className="w-40 h-40 mb-2">
             <AvatarImage 
               className="rounded-full border-8"
-              src="/profile.jpeg" 
-              alt="devsamlak" 
+              src={profileData.image} 
+              alt={profileData.username} 
             />
             <AvatarFallback className="text-7xl">PP</AvatarFallback>
           </Avatar>
-          <h2 className="font-bold text-2xl">Haruna Salami</h2>
-          <p className="text-lg">Software Developer</p>
+          <h2 className="font-bold text-2xl">{profileData.name}</h2>
+          <p className="text-lg">{profileData.title}</p>
           <div className="my-2">
-            <Link href={"/"} className={cn(buttonVariants(), "h-9 mr-2 text-lg font-semibold")} >
+            <Link href={profileData.calender_link} className={cn(buttonVariants(), "h-9 mr-2 text-lg font-semibold")} >
               Call Me
             </Link> 
             <Button onClick={openChatbot} className="h-9 text-lg font-semibold">
@@ -54,14 +36,14 @@ export default function Info({ setIsChatbotOpen }) {
             </Button>
           </div>
           <div>
-            {linkOptions.map((link, index) => (
+            {profileData.external_links.map((link, index) => (
               <Link href={link.url} key={index} className="mr-3 underline"> 
                 {link.text}
               </Link>
             ))}
           </div>
           <div className="mt-2 max-w-md ">
-            <Skill />
+            <Skill skillsets={profileData.skillsets}/>
           </div>
         </div>
       </section>

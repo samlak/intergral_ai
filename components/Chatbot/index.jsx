@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { QuestionInput } from "./QuestionInput";
+import { QuestionInput } from "./question-input";
+import { NewClient } from "./new-client";
 import { 
   MessagesSquare,
   X,
@@ -17,8 +18,12 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 
-export default function Chatbot({ isChatbotOpen, setIsChatbotOpen }) {
+export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }) {
   const ref = useRef(null);
+  const [clientId, setClientId] = useState("");
+  const [isOpenNewClient, setIsOpenNewClient] = useState(false);
+  const [pendingQuestion, setPendingQuestion] = useState("");
+  const [messages, setMessages] = useState([])
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen)
@@ -28,9 +33,6 @@ export default function Chatbot({ isChatbotOpen, setIsChatbotOpen }) {
     const lastChildElement = ref.current?.lastElementChild;
     lastChildElement?.scrollIntoView({ behavior: 'smooth' });
   }
-
-  const [messages, setMessages] = useState([])
-
 
   const answerInitialQuestions = async (client, chatbot) => {
     await setMessages((state) => ([
@@ -44,6 +46,17 @@ export default function Chatbot({ isChatbotOpen, setIsChatbotOpen }) {
         content: chatbot,
       },
     ]))
+    scrollDown();
+  }
+
+  const answerQuestion = (question) => {
+    setMessages((state) => ([
+      ...state, 
+      {
+        role: "client",
+        content: question,
+      },
+    ]));
     scrollDown();
   }
 
@@ -85,63 +98,90 @@ export default function Chatbot({ isChatbotOpen, setIsChatbotOpen }) {
     }
   ]
 
+  useEffect(() => {
+    const clientInfo = JSON.parse(localStorage.getItem('clientInfo'));
+    if (clientInfo) {
+      setClientId(clientInfo);
+    }
+  }, [])
   
+
   return (
     <section className="fixed bottom-5 right-5 flex flex-col z-50">
       {isChatbotOpen &&
         <div className="ml-5 xs:ml-0">
-          <Card className="w-full xs:w-[400px] h-[450px] xs:h-[400px] max-h-full mb-3 border-primary">
-            <CardHeader className="bg-blue-500 rounded-t-md py-2 px-4 flex flex-row items-center">
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src="/profile.jpeg" alt="devsamlak" />
-                  <AvatarFallback>PP</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-base font-semibold leading-none">Haruna Salami</p>
-                  <p className="text-sm font-medium text-gray-800">Software Developer</p>
+          <Card className="w-full xs:w-[400px] h-[450px] xs:h-[400px] max-h-full mb-3 border-primary relative">
+            <>
+              <CardHeader className="bg-blue-500 rounded-t-md py-2 px-4 flex flex-row items-center">
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage 
+                      src={profileData.image}  
+                      alt={profileData.username} 
+                    />
+                    <AvatarFallback>PP</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-base font-semibold leading-none">{profileData.name}</p>
+                    <p className="text-sm font-medium text-gray-800">{profileData.title}</p>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <ScrollArea className="h-[344px] xs:h-[290px] text-sm px-3">
-              {/* INITIAL QUESTIONS */}
-              <div className="mt-2 mb-3 bg-muted rounded-lg p-2">
-                <p className=" text-sm mb-2">
-                  Hello samlak! What would you like to disscuss with me?
-                </p>
-                <div className="flex flex-col items-start">
-                  { initialQuestions.map((question, index) => (
-                    <Button 
+              </CardHeader>
+              <ScrollArea className="h-[344px] xs:h-[290px] text-sm px-3">
+                {/* INITIAL QUESTIONS */}
+                <div className="mt-2 mb-3 bg-muted rounded-lg p-2">
+                  <p className=" text-sm mb-2">
+                    Hello there! What would you like to disscuss with me?
+                  </p>
+                  <div className="flex flex-col items-start">
+                    { initialQuestions.map((question, index) => (
+                      <Button 
+                        key={index}
+                        onClick={question.action}
+                        variant="outline" 
+                        className="rounded-lg mr-2 mb-2 h-6 text-xs px-3 border-white hover:bg-primary"
+                      >
+                        {question.text}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                {/* OTHER MESSAGES */}
+                <div ref={ref}>
+                  {messages.map((message, index) => (
+                    <div
                       key={index}
-                      onClick={question.action}
-                      variant="outline" 
-                      className="rounded-lg mr-2 mb-2 h-6 text-xs px-3 border-white hover:bg-primary"
+                      className={cn(
+                        "flex w-fit max-w-[75%] flex-col rounded-lg px-3 py-2 text-sm mb-3",
+                        message.role === "client"
+                          ? "ml-auto bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      )}
                     >
-                      {question.text}
-                    </Button>
+                      {message.content}
+                    </div>
                   ))}
                 </div>
+              </ScrollArea>
+              <div>
+                <QuestionInput 
+                  messages={messages}
+                  setMessages={setMessages} 
+                  scrollDown={scrollDown} 
+                  clientId={clientId}
+                  setPendingQuestion={setPendingQuestion}
+                  setIsOpenNewClient={setIsOpenNewClient}
+                />
               </div>
-              {/* OTHER MESSAGES */}
-              <div ref={ref}>
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={cn(
-                      "flex w-fit max-w-[75%] flex-col rounded-lg px-3 py-2 text-sm mb-3",
-                      message.role === "client"
-                        ? "ml-auto bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    )}
-                  >
-                    {message.content}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-            <div>
-              <QuestionInput setMessages={setMessages} scrollDown={scrollDown} />
-            </div>
+            </>
+            { isOpenNewClient && 
+              <NewClient 
+                setIsOpenNewClient={setIsOpenNewClient}
+                setPendingQuestion={setPendingQuestion}
+                pendingQuestion={pendingQuestion}
+                answerQuestion={answerQuestion} 
+              /> 
+            }
           </Card>
         </div>
       }

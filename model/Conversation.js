@@ -5,6 +5,10 @@ const conversationSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'client',
 	},
+	user: {
+		type: Schema.Types.ObjectId,
+		ref: 'user',
+	},
   messages: {
 		type: [Array],
 		blackbox: true,

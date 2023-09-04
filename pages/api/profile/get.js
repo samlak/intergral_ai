@@ -9,7 +9,7 @@ const getProfile = async (req, res) => {
 
     function searchProfile ( searchParams ) {
       Profile.findOne({ ...searchParams })
-      .select("-__v  -createdAt -updatedAt")
+      .select("-__v -createdAt -updatedAt")
       .exec(function(error, data){
         if(error) return res.status(400).json({ status : false, data: null });
         res

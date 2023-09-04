@@ -45,7 +45,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Loader2 } from "lucide-react"
-import { customUrl } from "@/lib/url";
 
 const calendar = [
   "January",
@@ -116,7 +115,7 @@ export default function Project({ profileData }) {
           description: (
             <p>
               Your profile has been completed. Check your profile here {" "}
-              <a href={`/pro/${profileData.username}`} className="text-blue-500 font-bold">
+              <a href={`/pro/${profileData.username}`} target="_blank" className="text-blue-500 font-bold">
                 {`https://indielance.co/pro/${profileData.username}`}
               </a>
             </p>

@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 
-export function QuestionInput({ setMessages, scrollDown }) {
+export function QuestionInput({ 
+  messages, 
+  setMessages, 
+  scrollDown, 
+  clientId,
+  setPendingQuestion,
+  setIsOpenNewClient 
+}) {
   const [question, setQuestion] = useState("");
 
   const onInputChange = (event) => {
@@ -10,6 +17,12 @@ export function QuestionInput({ setMessages, scrollDown }) {
 
   const submitQuestion = async (event) => {
     event.preventDefault();
+    if(!messages.length && !clientId) {
+      setPendingQuestion(question);
+      setIsOpenNewClient(true);
+      setQuestion("")
+      return ;
+    }
  
     await setMessages((state) => ([
       ...state, 

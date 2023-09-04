@@ -13,7 +13,7 @@ const updateProfile = async (req, res) => {
         useFindAndModify: false,
         new: true
       }
-    ) .exec(function(error, data){
+    ).exec(function(error, data){
       if(error) {
         return res.status(400).json({ status : false, error: "Error occurred! Please try again." });
       }

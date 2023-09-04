@@ -1,4 +1,5 @@
 import Head from "next/head";
+import dynamic from 'next/dynamic'
 import { useState, useEffect } from "react";
 import { getSession } from "next-auth/react";
 import Layout from "@/components/Layout";
@@ -8,8 +9,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+// import { Experience, Background, Project } from "../../components/ProfileDashboard/background";
 import { Experience, Background, Project } from "@/components/ProfileDashboard";
 import { customUrl } from "@/lib/url";
+
+const DynamicBackground = dynamic(() => import('../../components/ProfileDashboard/background'), {
+  ssr: false,
+})
+
 
 export default function Profile({profileData}) {
   const [ isNewProfile, setIsNewProfile ] = useState(true)
@@ -46,7 +53,7 @@ export default function Profile({profileData}) {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="background">
-                  <Background 
+                  <DynamicBackground 
                     profileData={profileData} 
                     setIsNewProfile={setIsNewProfile}
                   />

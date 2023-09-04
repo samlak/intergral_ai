@@ -1,20 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-export default function Skill() {  
-  const skillsets = [
-    "Javascript",
-    "HTML",
-    "CSS",
-    "Prompt Engineering",
-    "Chatbot Development",
-    "React",
-    "Node.js",
-    "Python",
-    "Java",
-    "C#",
-    "C++",
-    "Ruby",
-  ]
+export default function Skill({ skillsets }) {  
   return  (
     <section className="container py-3">
       <div className="flex flex-wrap justify-center">

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 import { 
   Briefcase, 
@@ -9,7 +10,8 @@ import {
 } from "lucide-react"
 
 export function MainNav() {
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { data: session } = useSession();
 
   const items = [
     {
@@ -81,15 +83,28 @@ export function MainNav() {
       </div>
 
       <nav className="flex justify-center items-center">
-        <Link
-          href="/login"
-          className={cn(
-            buttonVariants({ variant: "secondary", size: "sm" }),
-            "px-4"
-          )}
-        >
-          Login
-        </Link>
+        {session ?
+          <Link
+            href="/profile"
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "sm" }),
+              "px-4"
+            )}
+          >
+            Go to Profile
+          </Link>
+        :
+          <Link
+            href="/login"
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "sm" }),
+              "px-4"
+            )}
+          >
+            Login
+          </Link>
+        }
+
       </nav>
     </>
   )

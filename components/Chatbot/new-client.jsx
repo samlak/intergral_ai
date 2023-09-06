@@ -19,7 +19,8 @@ export function NewClient({
   setIsOpenNewClient,  
   setPendingQuestion,
   pendingQuestion,
-  answerQuestion
+  answerQuestion,
+  profileName
 }) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,9 +31,14 @@ export function NewClient({
     email: z.string().email({ message: "Invalid email address" }),
   });
 
+  const defaultValues = {
+    name: "",
+    email: ""
+  }
+
   const form = useForm({
     resolver: zodResolver(clientsSchema),
-    defaultValues: "",
+    defaultValues,
     mode: "onChange",
   });
 
@@ -78,7 +84,7 @@ export function NewClient({
       <div>
         <p className="text-center text-sm mb-3">
           Let {" "}
-          <strong>Adebayo Salami</strong>
+          <strong>{profileName}</strong>
           {" "} know who is chatting with them by providing your contact details below.
         </p>
         <Form {...form}>

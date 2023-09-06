@@ -3,11 +3,10 @@ import { Send } from "lucide-react";
 
 export function QuestionInput({ 
   messages, 
-  setMessages, 
-  scrollDown, 
   clientId,
   setPendingQuestion,
-  setIsOpenNewClient 
+  setIsOpenNewClient,
+  answerQuestion
 }) {
   const [question, setQuestion] = useState("");
 
@@ -23,16 +22,9 @@ export function QuestionInput({
       setQuestion("")
       return ;
     }
- 
-    await setMessages((state) => ([
-      ...state, 
-      {
-        role: "client",
-        content: question,
-      },
-    ]))
+    
+    answerQuestion(question);
     setQuestion("")
-    scrollDown();
   };
 
   return (

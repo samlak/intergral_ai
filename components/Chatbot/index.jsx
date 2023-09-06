@@ -17,13 +17,16 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { useChat } from 'ai/react';
 
 export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }) {
   const ref = useRef(null);
   const [clientId, setClientId] = useState("");
   const [isOpenNewClient, setIsOpenNewClient] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState("");
-  const [messages, setMessages] = useState([])
+
+  const { messages, append } = useChat({api: "/api/ai/profile-chat"});
+
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen)
@@ -34,67 +37,45 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
     lastChildElement?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  const answerInitialQuestions = async (client, chatbot) => {
-    await setMessages((state) => ([
-      ...state, 
-      {
-        role: "client",
-        content: client,
-      },
-      {
-        role: "chatbot",
-        content: chatbot,
-      },
-    ]))
+  const answerQuestion = async (question) => {    
+    append({
+      role: "user",
+      content: question,
+    })
+    
     scrollDown();
   }
 
-  const answerQuestion = (question) => {
-    setMessages((state) => ([
-      ...state, 
-      {
-        role: "client",
-        content: question,
-      },
-    ]));
-    scrollDown();
+  const answerInitialQuestion = async (question) => {
+    if(!messages.length && !clientId) {
+      setPendingQuestion(question);
+      setIsOpenNewClient(true);
+      return ;
+    }
+
+    answerQuestion(question);
   }
 
   const initialQuestions = [
     {
       text: "Tell me about yourself",
-      action: () => answerInitialQuestions(
-        "Tell me about yourself",
-        "I am an accomplished software developer with a proven track record of over 5 years in the industry. My expertise spans a wide spectrum of programming languages, technologies, and development methodologies, enabling me to create robust and efficient software solutions that meet the most demanding requirements."
-      )
+      action: () => answerInitialQuestion("Tell me about yourself")
     },
     {
       text: "What is your service offering",
-      action: () => answerInitialQuestions(
-        "What is your service offering",
-        "I offer a comprehensive range of software development services tailored to meet your specific needs. With expertise in JavaScript, Python, Java, C#, C++, Ruby, PHP, Swift, SQL, HTML/CSS, React, and Node.js, I can design and deliver cutting-edge applications and solutions that drive innovation and efficiency. Whether you require robust web and mobile app development, efficient database management, or seamless front-end and back-end integration, my skillset enables me to craft solutions that not only meet your technical requirements but also enhance user experiences and contribute to your business success."
-      )
+      action: () => answerInitialQuestion("What is your service offering")
     },
     {
       text: "Tell me about your previous project",
-      action: () => answerInitialQuestions(
-        "Tell me about your previous project",
-        "In my previous project, I played a pivotal role in the development of a vibrant social networking platform aimed at fostering seamless connections among users. Within the timeframe of March 2017 to August 2018, I led the design and implementation efforts that resulted in an engaging user experience. Notably, I crafted interactive user profiles, integrated real-time chat functionalities, and seamlessly integrated content sharing capabilities. As a result of these endeavors, the platform garnered significant popularity, emerging as a central hub where users could effortlessly connect, collaborate, and engage. It was truly fulfilling to witness the platform flourish and contribute positively to user interactions and relationships."
-      )
+      action: () => answerInitialQuestion("Tell me about your previous project")
     },
     {
       text: "I want to make a project request",
-      action: () => answerInitialQuestions(
-        "I want to make a project request",
-        "Absolutely, I'm well-equipped to handle your project request. With 5+ years of experience, I've delivered successful solutions across various domains, including social networking platforms, e-commerce systems, and educational apps. Let's connect to discuss your project specifics and collaborate on creating a tailored solution that meets your goals effectively. Looking forward to the opportunity to contribute to your project's success!"
-      )
+      action: () => answerInitialQuestion("I want to make a project request")
     },
     {
       text: "I want to book a call with you",
-      action: () => answerInitialQuestions(
-        "I want to make a project request",
-        "Absolutely, I would be delighted to connect with you further. To schedule a call at your convenience, please use my Calendly link: https://calendly.com/samlak. This will allow you to choose a suitable time slot that works best for you, and we can have a productive conversation about how I can contribute to your projects and goals. Looking forward to our discussion!"
-      )
+      action: () => answerInitialQuestion("I want to book a call with you")
     }
   ]
 
@@ -153,7 +134,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
                       key={index}
                       className={cn(
                         "flex w-fit max-w-[75%] flex-col rounded-lg px-3 py-2 text-sm mb-3",
-                        message.role === "client"
+                        message.role === "user"
                           ? "ml-auto bg-primary text-primary-foreground"
                           : "bg-muted"
                       )}
@@ -166,11 +147,10 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
               <div>
                 <QuestionInput 
                   messages={messages}
-                  setMessages={setMessages} 
-                  scrollDown={scrollDown} 
                   clientId={clientId}
                   setPendingQuestion={setPendingQuestion}
                   setIsOpenNewClient={setIsOpenNewClient}
+                  answerQuestion={answerQuestion}
                 />
               </div>
             </>
@@ -180,6 +160,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
                 setPendingQuestion={setPendingQuestion}
                 pendingQuestion={pendingQuestion}
                 answerQuestion={answerQuestion} 
+                profileName={profileData.name}
               /> 
             }
           </Card>

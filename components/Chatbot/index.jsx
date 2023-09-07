@@ -18,15 +18,74 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { useChat } from 'ai/react';
+import { toast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton"
+import ReactMarkdown from 'react-markdown'
 
 export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }) {
   const ref = useRef(null);
-  const [clientId, setClientId] = useState("");
+  const [clientInfo, setClientInfo] = useState("");
+  const [conversationId, setConversationId] = useState("");
   const [isOpenNewClient, setIsOpenNewClient] = useState(false);
+  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState("");
+  const [currentQuestion, setCurrentQuestion] = useState("");
 
-  const { messages, append } = useChat({api: "/api/ai/profile-chat"});
+  const onFinishGeneration =  (data) => {
+    setTimeout(async () => {
+      const finalMessage = [
+        ...messages,
+        {
+          "role" : "user",
+          "content" : currentQuestion,
+        }, 
+        { ...data }
+      ]
 
+      const clientData = JSON.parse(localStorage.getItem('clientInfo'));
+    
+      if (clientData && clientData.email) {
+        const formData = {
+          user: profileData.user,
+          conversation_id: conversationId,
+          client_name: clientData.name,
+          client_email: clientData.email,
+          messages: finalMessage
+        }
+
+        await fetch("/api/conversation/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: formData
+          }),
+        })
+        .then((res) => res.json())
+        .then(async (response) => {
+          if (response.status) {
+            setConversationId(response.data)
+          } else {
+            toast({
+              title: "Unable to save your chat. Please try again!",
+            })
+          }
+        })
+        .catch((error) => {
+          toast({
+            title: "Unable to save your chat. Please try again!",
+          })
+        });
+      }
+    }, 10);
+  }
+
+  const { messages, append } = useChat({
+    api: "/api/ai/profile-chat",
+    onFinish: onFinishGeneration, 
+    onResponse: () => setIsWaitingForResponse(false)
+  });
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen)
@@ -37,7 +96,9 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
     lastChildElement?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  const answerQuestion = async (question) => {    
+  const answerQuestion = async (question) => {   
+    setCurrentQuestion(question)
+    setIsWaitingForResponse(true)
     append({
       role: "user",
       content: question,
@@ -47,7 +108,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
   }
 
   const answerInitialQuestion = async (question) => {
-    if(!messages.length && !clientId) {
+    if(!messages.length && !clientInfo) {
       setPendingQuestion(question);
       setIsOpenNewClient(true);
       return ;
@@ -80,9 +141,9 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
   ]
 
   useEffect(() => {
-    const clientInfo = JSON.parse(localStorage.getItem('clientInfo'));
-    if (clientInfo) {
-      setClientId(clientInfo);
+    const clientData = JSON.parse(localStorage.getItem('clientInfo'));
+    if (clientData && clientData.email) {
+      setClientInfo(clientData);
     }
   }, [])
   
@@ -91,7 +152,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
     <section className="fixed bottom-5 right-5 flex flex-col z-50">
       {isChatbotOpen &&
         <div className="ml-5 xs:ml-0">
-          <Card className="w-full xs:w-[400px] h-[450px] xs:h-[400px] max-h-full mb-3 border-primary relative">
+          <Card className="w-full xs:w-[400px] h-[450px] xs:h-[430px] max-h-full mb-3 border-primary relative">
             <>
               <CardHeader className="bg-blue-500 rounded-t-md py-2 px-4 flex flex-row items-center">
                 <div className="flex items-center space-x-4">
@@ -108,7 +169,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
                   </div>
                 </div>
               </CardHeader>
-              <ScrollArea className="h-[344px] xs:h-[290px] text-sm px-3">
+              <ScrollArea className="h-[344px] xs:h-[320px] text-sm px-3">
                 {/* INITIAL QUESTIONS */}
                 <div className="mt-2 mb-3 bg-muted rounded-lg p-2">
                   <p className=" text-sm mb-2">
@@ -139,15 +200,20 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
                           : "bg-muted"
                       )}
                     >
-                      {message.content}
+                      <ReactMarkdown>
+                        {message.content}
+                      </ReactMarkdown>
                     </div>
                   ))}
+                  { isWaitingForResponse && 
+                    <Skeleton className="h-10 w-[75%] rounded-lg bg-muted mb-4" />
+                  }
                 </div>
               </ScrollArea>
               <div>
                 <QuestionInput 
                   messages={messages}
-                  clientId={clientId}
+                  clientInfo={clientInfo}
                   setPendingQuestion={setPendingQuestion}
                   setIsOpenNewClient={setIsOpenNewClient}
                   answerQuestion={answerQuestion}
@@ -161,6 +227,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
                 pendingQuestion={pendingQuestion}
                 answerQuestion={answerQuestion} 
                 profileName={profileData.name}
+                setClientInfo={setClientInfo}
               /> 
             }
           </Card>

@@ -9,8 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-// import { Experience, Background, Project } from "../../components/ProfileDashboard/background";
-import { Experience, Background, Project } from "@/components/ProfileDashboard";
+import { Experience, Project } from "@/components/ProfileDashboard";
 import { customUrl } from "@/lib/url";
 
 const DynamicBackground = dynamic(() => import('../../components/ProfileDashboard/background'), {

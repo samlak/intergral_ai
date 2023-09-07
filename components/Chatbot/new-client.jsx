@@ -2,7 +2,6 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { toast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -20,7 +19,8 @@ export function NewClient({
   setPendingQuestion,
   pendingQuestion,
   answerQuestion,
-  profileName
+  profileName,
+  setClientInfo
 }) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,37 +46,13 @@ export function NewClient({
   async function onSubmit (data) {
     setIsLoading(true);
 
-    await fetch("/api/client/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data,
-      }),
-    })
-    .then((res) => res.json())
-    .then(async (response) => {
-      setIsLoading(false);
-      if (response.status) {
-        answerQuestion(pendingQuestion);
-        setPendingQuestion("")
-        localStorage.setItem('clientInfo', JSON.stringify(response.data));
-        setIsOpenNewClient(false);
-      } else {
-        toast({
-          title: "Submission unsuccessful",
-          description: <p>Error occured while submitting your data. Please try again!</p>,
-        })
-      }
-    })
-    .catch((error) => {
-      setIsLoading(false);
-      toast({
-        title: "Submission unsuccessful",
-        description: <p>Error occured while submitting your data. Please try again!</p>,
-      })
-    });
+    setClientInfo(JSON.stringify(data))
+    localStorage.setItem('clientInfo', JSON.stringify(data));
+    answerQuestion(pendingQuestion);
+    setIsOpenNewClient(false);
+    setPendingQuestion("")
+
+    setIsLoading(false);
   }
 
   return (

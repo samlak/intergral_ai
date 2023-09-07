@@ -3,7 +3,7 @@ import { Send } from "lucide-react";
 
 export function QuestionInput({ 
   messages, 
-  clientId,
+  clientInfo,
   setPendingQuestion,
   setIsOpenNewClient,
   answerQuestion
@@ -16,7 +16,7 @@ export function QuestionInput({
 
   const submitQuestion = async (event) => {
     event.preventDefault();
-    if(!messages.length && !clientId) {
+    if(!messages.length && !clientInfo) {
       setPendingQuestion(question);
       setIsOpenNewClient(true);
       setQuestion("")

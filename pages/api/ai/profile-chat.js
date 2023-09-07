@@ -39,7 +39,6 @@ Use the information provided above to answer the below. The answer must be based
   ]
 
   const response = await openai.chat.completions.create({
-    // model: 'gpt-4',
     model: 'gpt-3.5-turbo',
     stream: true,
     messages: finalMessages,

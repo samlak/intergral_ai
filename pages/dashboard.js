@@ -3,9 +3,29 @@ import { getSession } from "next-auth/react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button"
 import { ClientsData, Analytics, ChatSession } from "@/components/UserDashboard"
+import { customUrl } from "@/lib/url";
+import { useEffect, useState } from "react";
 
-export default function Dashboard() {
+export default function Dashboard({ conversationData }) {
+  const [ clients, setClients ] = useState([]);
+  const [ conversations, setConversations ] = useState([]);
 
+  useEffect(() => {
+    if(conversationData.length){
+      const clientsData =  conversationData.map((data) => ({
+        name: data.client_name,
+        email: data.client_email,
+      }))
+
+      const uniqueClients = clientsData.filter((client, index, self) =>
+        index === self.findIndex(data => data.email === client.email)
+      );
+
+      setConversations(conversationData)
+      setClients(uniqueClients)
+    }
+  }, [])
+  
   return (
     <div>
       <Head>
@@ -21,27 +41,30 @@ export default function Dashboard() {
                 </h2>
               </div>
 
-              <Analytics />
+              <Analytics 
+                clientsLength={clients.length}
+                conversationsLength={conversations.length}
+              />
             </section>
 
-            <section className="mb-10">
+            <section className="mb-10" id="client-data">
               <div className="mb-2">
                 <h2 className="text-lg font-bold">
                   Client
                 </h2>
               </div>
 
-              <ClientsData />
+              <ClientsData clients={clients} />
             </section>
 
-            <section className="mb-10">
+            <section className="mb-10" id="conversation">
               <div className="mb-2">
                 <h2 className="text-lg font-bold">
                   Chat Session
                 </h2>
               </div>
 
-              <ChatSession />
+              <ChatSession conversations={conversations} />
             </section>
           </main>
         </Layout>
@@ -62,9 +85,26 @@ export async function getServerSideProps({ req }) {
     };
   }
 
+  let conversationData;
+  
+  await fetch(customUrl("/api/conversation/get"), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ 
+      email: session.user.email 
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    conversationData = data.data;
+  });
+
   return {
     props: { 
       session,
+      conversationData
     },
   };
 }

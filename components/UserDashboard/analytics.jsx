@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 import Link from "next/link";
 
-export default function Analytics() {
+export default function Analytics({ clientsLength, conversationsLength  }) {
     return (
       <div className="flex flex-wrap">
         <Card className="w-[calc(50%-5px)] md:w-[calc(33%-5px)] mr-[5px]  px-4 py-2">
@@ -19,8 +19,8 @@ export default function Analytics() {
             <Users className="h-6 w-6 text-muted-foreground" />
           </div>
           <div className="flex justify-between items-end">
-            <div className="text-2xl font-bold">50</div>
-            <Link href={"#"} className="text-sm  text-muted-foreground hover:text-foreground" >View More</Link>
+            <div className="text-2xl font-bold">{clientsLength}</div>
+            <Link href={"#client-data"} className="text-sm  text-muted-foreground hover:text-foreground" >View More</Link>
           </div>
         </Card>
 
@@ -32,8 +32,8 @@ export default function Analytics() {
             <MessagesSquare className="h-6 w-6 text-muted-foreground" />
           </div>
           <div className="flex justify-between items-end">
-            <div className="text-2xl font-bold">100</div>
-            <Link href={"#"} className="text-sm  text-muted-foreground hover:text-foreground" >View More</Link>
+            <div className="text-2xl font-bold">{conversationsLength}</div>
+            <Link href={"#conversation"} className="text-sm  text-muted-foreground hover:text-foreground" >View More</Link>
           </div>
         </Card>
       </div>

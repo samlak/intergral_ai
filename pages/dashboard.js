@@ -9,10 +9,11 @@ import { useEffect, useState } from "react";
 export default function Dashboard({ conversationData }) {
   const [ clients, setClients ] = useState([]);
   const [ conversations, setConversations ] = useState([]);
+  const [ username, setUsername ] = useState("");
 
   useEffect(() => {
-    if(conversationData.length){
-      const clientsData =  conversationData.map((data) => ({
+    if(conversationData.conversation.length){
+      const clientsData =  conversationData.conversation.map((data) => ({
         name: data.client_name,
         email: data.client_email,
       }))
@@ -21,8 +22,9 @@ export default function Dashboard({ conversationData }) {
         index === self.findIndex(data => data.email === client.email)
       );
 
-      setConversations(conversationData)
+      setConversations(conversationData.conversation)
       setClients(uniqueClients)
+      setUsername(conversationData.username)
     }
   }, [])
   
@@ -44,6 +46,7 @@ export default function Dashboard({ conversationData }) {
               <Analytics 
                 clientsLength={clients.length}
                 conversationsLength={conversations.length}
+                username={username}
               />
             </section>
 

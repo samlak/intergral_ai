@@ -22,7 +22,7 @@ export default function ChatSession({ conversations }) {
       { conversations.length ?
         <div className="flex flex-wrap justify-between">
           {conversations.map((conversation, index) => (
-            <Card className="w-full sm:w-[calc(50%-10px)] mb-4" key={index}>
+            <Card className="w-full sm:w-[calc(50%-10px)] mb-4 flex flex-col justify-between" key={index}>
               <p className="px-4 py-4"> 
                 <span className="underline font-bold">{conversation.client_name}</span> 
                 {" "} started a conversation on {" "}

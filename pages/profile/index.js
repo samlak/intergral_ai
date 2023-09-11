@@ -9,7 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { Experience, Project } from "@/components/ProfileDashboard";
+import { Experience, Project, Train } from "@/components/ProfileDashboard";
 import { customUrl } from "@/lib/url";
 
 const DynamicBackground = dynamic(() => import('../../components/ProfileDashboard/background'), {
@@ -40,7 +40,7 @@ export default function Profile({profileData}) {
 
             <section className="container px-0 xs:px-8">
               <Tabs defaultValue="background" className="">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="background">
                     Background
                   </TabsTrigger>
@@ -49,6 +49,9 @@ export default function Profile({profileData}) {
                   </TabsTrigger>
                   <TabsTrigger value="projects" disabled={isNewProfile}>
                     Projects
+                  </TabsTrigger>
+                  <TabsTrigger value="train" disabled={isNewProfile}>
+                    Train
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="background">
@@ -62,6 +65,9 @@ export default function Profile({profileData}) {
                 </TabsContent>
                 <TabsContent value="projects">
                   <Project profileData={profileData} />
+                </TabsContent>
+                <TabsContent value="train">
+                  <Train profileData={profileData} />
                 </TabsContent>
               </Tabs>  
             </section>          

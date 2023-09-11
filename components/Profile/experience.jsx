@@ -41,7 +41,7 @@ export default function Experience({ profileData }) {
           ))
         : 
           <div className="flex w-full justify-center mt-5">
-            <p className="font-semibold">Work experience not yet uploaded</p>
+            <p className="font-semibold">No work experience provided yet. Contact the user for more info.</p>
           </div>
         }
       </div>

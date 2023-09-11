@@ -113,7 +113,7 @@ export default function Experience({ profileData }) {
       if (response.status) {
         toast({
           title: "Submitted successfully",
-          description: <p>Your data as been submitted successfully. Proceed to complete your profile.</p>,
+          description: <p>Your data as been submitted successfully. Proceed continue to add your previous project.</p>,
         })
       } else {
         toast({

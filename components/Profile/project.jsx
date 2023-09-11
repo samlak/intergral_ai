@@ -40,7 +40,7 @@ export default function Project({ profileData }) {
           ))
         : 
           <div className="flex w-full justify-center mt-5">
-            <p className="font-semibold">Previous project not yet uploaded</p>
+            <p className="font-semibold">No previous project provided yet. Contact the user for more info. not yet uploaded</p>
           </div>
         }
       </div>

@@ -112,14 +112,7 @@ export default function Project({ profileData }) {
       if (response.status) {
         toast({
           title: "Submitted successfully",
-          description: (
-            <p>
-              Your profile has been completed. Check your profile here {" "}
-              <a href={`/pro/${profileData.username}`} target="_blank" className="text-blue-500 font-bold">
-                {`https://indielance.co/pro/${profileData.username}`}
-              </a>
-            </p>
-          ),
+          description: <p>Your data as been submitted successfully. Proceed to train your chatbot.</p>,
         })
       } else {
         toast({

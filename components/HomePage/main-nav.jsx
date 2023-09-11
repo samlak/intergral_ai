@@ -85,7 +85,7 @@ export function MainNav() {
       <nav className="flex justify-center items-center">
         {session ?
           <Link
-            href="/profile"
+            href="/dashboard"
             className={cn(
               buttonVariants({ variant: "secondary", size: "sm" }),
               "px-4"

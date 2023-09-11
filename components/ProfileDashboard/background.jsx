@@ -110,7 +110,7 @@ export default function Background({ profileData, setIsNewProfile }) {
         if (response.status) {
           toast({
             title: "Submitted successfully",
-            description: <p>Your data as been submitted successfully. Proceed to complete your profile.</p>,
+            description: <p>Your data as been submitted successfully. Proceed continue to add your work experience.</p>,
           })
         } else {
           toast({
@@ -179,7 +179,7 @@ export default function Background({ profileData, setIsNewProfile }) {
           <FileController
             control={form.control}
             name="image"
-            defaultValue={profileData.image ? new File([], profileData.image) : ""}
+            defaultValue={profileData && profileData.image ? new File([], profileData.image) : ""}
             render={({ field, base64, remove }) => (
               <FormItem>
                 <FormLabel>Profile Picture</FormLabel>

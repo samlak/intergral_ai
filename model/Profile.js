@@ -40,7 +40,10 @@ const profileSchema = new Schema({
   projects: {
 		type: [Object],
 		blackbox: true,
-	}
+	},
+  trained_data: {
+		type: String,
+	},
 }, {
 	timestamps: true
 });

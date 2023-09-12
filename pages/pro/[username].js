@@ -12,7 +12,12 @@ export default function ProfilePage({ profileData }) {
   return (
     <>
       <Head>
-        <title>Profile | Indielance</title>
+        <title>
+          { profileData ? 
+            `${profileData.name} | Indielance` : 
+            "Profile | Indielance" 
+          }
+        </title>
       </Head>
       <Layout showFooter={false}>
         {profileData ? 
@@ -30,11 +35,13 @@ export default function ProfilePage({ profileData }) {
 
             <Footer />
 
-            <Chatbot
-              profileData={profileData}
-              isChatbotOpen={isChatbotOpen}
-              setIsChatbotOpen={setIsChatbotOpen}
-            />
+            {profileData.trained_data &&
+              <Chatbot
+                profileData={profileData}
+                isChatbotOpen={isChatbotOpen}
+                setIsChatbotOpen={setIsChatbotOpen}
+              />
+            }
           </>
           : 
           <p className="my-10 text-center">

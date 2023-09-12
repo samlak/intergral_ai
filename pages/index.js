@@ -36,7 +36,6 @@ const Home = () => {
             <Link
               href={"/dashboard"}
               className="rounded-2xl bg-muted px-4 py-1.5 text-sm font-medium"
-              target="_blank"
             >
               Get Started for Free
             </Link>
@@ -99,7 +98,6 @@ const Home = () => {
             
               <Link
                 href={"/profile"}
-                target="_blank"
                 rel="noreferrer"
                 className="flex"
               >

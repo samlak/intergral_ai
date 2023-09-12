@@ -34,7 +34,7 @@ export default function Experience({ profileData }) {
                 {job.company_name}
               </Link>
               <p className="text-sm mb-2">
-                {job.start_date.month} {" "} {job.start_date.year} - {job.end_date.month} {" "} {job.end_date.year}
+                {job.start_date.month} {" "} {job.start_date.year} - {job.end_date.month} {" "} {job.end_date.month !== "Present" && job.end_date.year}
               </p>
               <TruncatedText description={job.description} />
             </Card>

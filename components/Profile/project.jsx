@@ -33,7 +33,7 @@ export default function Project({ profileData }) {
                 {project.project_title}
               </Link>
               <p className="text-sm mb-2">
-                {project.start_date.month} {" "} {project.start_date.year} - {project.end_date.month} {" "} {project.end_date.year}
+                {project.start_date.month} {" "} {project.start_date.year} - {project.end_date.month} {" "} {project.end_date.month !== "Present" && project.end_date.year}
               </p>
               <TruncatedText description={project.description} />
             </Card>

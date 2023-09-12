@@ -72,7 +72,11 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
 
   const { messages, append, isLoading: isGenerating } = useChat({
     api: "/api/ai/profile-chat",
-    onResponse: () => setIsWaitingForResponse(false)
+    onResponse: () => setIsWaitingForResponse(false),
+    body: { 
+      trainedData: profileData.trained_data,
+      profession: profileData.title
+    }
   });
 
   const toggleChatbot = () => {

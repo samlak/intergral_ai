@@ -11,7 +11,11 @@ import Skill from "./skill"
 
 
 export default function Info({ profileData, setIsChatbotOpen }) {   
-  const openChatbot = () => setIsChatbotOpen(true);
+  const openChatbot = () => {
+    if(profileData.trained_data){
+      setIsChatbotOpen(true);
+    }
+  }
 
   return (
     <>
@@ -35,12 +39,14 @@ export default function Info({ profileData, setIsChatbotOpen }) {
               Chat Me
             </Button>
           </div>
-          <div>
-            {profileData.external_links.map((link, index) => (
-              <Link href={link.url} key={index} className="mr-3 underline"> 
-                {link.text}
-              </Link>
-            ))}
+          <div className="mt-2 max-w-md ">
+            <div className="flex flex-wrap justify-center ">
+              {profileData.external_links.map((link, index) => (
+                <Link href={link.url} key={index} className="mr-3 mb-1 underline" target="_blank"> 
+                  {link.text}
+                </Link>
+              ))}
+            </div>
           </div>
           <div className="mt-2 max-w-md ">
             <Skill skillsets={profileData.skillsets}/>

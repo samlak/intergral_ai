@@ -12,6 +12,7 @@ export default function Dashboard({ conversationData }) {
   const [ username, setUsername ] = useState("");
 
   useEffect(() => {
+    setUsername(conversationData.username)
     if(conversationData.conversation.length){
       const clientsData =  conversationData.conversation.map((data) => ({
         name: data.client_name,
@@ -24,7 +25,6 @@ export default function Dashboard({ conversationData }) {
 
       setConversations(conversationData.conversation)
       setClients(uniqueClients)
-      setUsername(conversationData.username)
     }
   }, [])
   

@@ -59,6 +59,15 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
   }
+
+  .markdown_style a {
+    color: rgb(59 130 246);
+    font-weight: 500;
+  }
+
+  .markdown_style a:hover {
+    text-decoration: underline;
+  }
 }
 
 @layer base {

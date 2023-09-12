@@ -31,59 +31,47 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
   const [pendingQuestion, setPendingQuestion] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState("");
 
-  const onFinishGeneration =  (data) => {
-    setTimeout(async () => {
-      const finalMessage = [
-        ...messages,
-        {
-          "role" : "user",
-          "content" : currentQuestion,
-        }, 
-        { ...data }
-      ]
+  const onFinishGeneration =  async (data) => {
+    const clientData = JSON.parse(localStorage.getItem('clientInfo'));
+  
+    if (clientData && clientData.email) {
+      const formData = {
+        user: profileData.user,
+        conversation_id: conversationId,
+        client_name: clientData.name,
+        client_email: clientData.email,
+        messages
+      }
 
-      const clientData = JSON.parse(localStorage.getItem('clientInfo'));
-    
-      if (clientData && clientData.email) {
-        const formData = {
-          user: profileData.user,
-          conversation_id: conversationId,
-          client_name: clientData.name,
-          client_email: clientData.email,
-          messages: finalMessage
-        }
-
-        await fetch("/api/conversation/save", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: formData
-          }),
-        })
-        .then((res) => res.json())
-        .then(async (response) => {
-          if (response.status) {
-            setConversationId(response.data)
-          } else {
-            toast({
-              title: "Unable to save your chat. Please try again!",
-            })
-          }
-        })
-        .catch((error) => {
+      await fetch("/api/conversation/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: formData
+        }),
+      })
+      .then((res) => res.json())
+      .then(async (response) => {
+        if (response.status) {
+          setConversationId(response.data)
+        } else {
           toast({
             title: "Unable to save your chat. Please try again!",
           })
-        });
-      }
-    }, 10);
+        }
+      })
+      .catch((error) => {
+        toast({
+          title: "Unable to save your chat. Please try again!",
+        })
+      });
+    }
   }
 
-  const { messages, append } = useChat({
+  const { messages, append, isLoading: isGenerating } = useChat({
     api: "/api/ai/profile-chat",
-    onFinish: onFinishGeneration, 
     onResponse: () => setIsWaitingForResponse(false)
   });
 
@@ -97,13 +85,13 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
   }
 
   const answerQuestion = async (question) => {   
-    setCurrentQuestion(question)
+    await setCurrentQuestion(question)
     setIsWaitingForResponse(true)
-    append({
+    await append({
       role: "user",
       content: question,
     })
-    
+
     scrollDown();
   }
 
@@ -147,6 +135,11 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
     }
   }, [])
   
+  useEffect(() => {
+    if(!isGenerating && messages.length){
+      onFinishGeneration();
+    }
+  }, [isGenerating])
 
   return (
     <section className="fixed bottom-5 right-5 flex flex-col z-50">
@@ -200,7 +193,7 @@ export default function Chatbot({ profileData, isChatbotOpen, setIsChatbotOpen }
                           : "bg-muted"
                       )}
                     >
-                      <ReactMarkdown>
+                      <ReactMarkdown className="markdown_style">
                         {message.content}
                       </ReactMarkdown>
                     </div>

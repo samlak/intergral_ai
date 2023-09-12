@@ -1,15 +1,60 @@
 import connectMongo from '../../../database/conn';
 import Profile from '../../../model/Profile';
+import OpenAI from 'openai'
+
+ 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+})
 
 const trainBot = async (req, res) => {
   try {
     await connectMongo().catch(error => res.json({ status : false, error: "Database connection failed."}));
-    const { profileId, data  } = req.body;
+    const { profileData  } = req.body;
+
+    let summarizedBio = ""
+    if (profileData.bio) {
+      const prompt = `Help me summarize these sentences into 1 paragraph. Make the text short and concise
+      "${profileData.bio}"
+      `;
+
+      const messages = [
+        { role: "user", content: prompt },
+      ];
+
+      const response = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages
+      })
+      
+      summarizedBio = response.choices[0].message.content;
+    }
+
+    const skillset = profileData.skillsets.join(', ')
+    const works = profileData.experiences.map((work) => (
+      `${work.job_title} at ${work.company_name} from ${work.start_date.month} ${work.start_date.year} to ${work.end_date.month} ${work.end_date.year}`
+    ))
+    const worksStringify = works.join('\n')
+
+    const projects = profileData.projects.map((project) => (
+      `Worked on ${project.project_title} from ${project.start_date.month} ${project.start_date.year} to ${project.end_date.month} ${project.end_date.year}`
+    ))
+    const projectsStringify = projects.join('\n')
+
+    const summarizedContent = `
+      Name: ${profileData.name}
+      Occupation: ${profileData.title}
+      Bio: ${summarizedBio}
+      Skillsets: ${skillset}
+      Calenderly Link: ${profileData.calender_link}
+      Work experience: ${worksStringify}
+      Previous projects: ${projectsStringify}
+    `
 
 
     Profile.findByIdAndUpdate(
-      profileId, 
-      { $set: { ...data } }, 
+      profileData._id, 
+      { $set: { trained_data: summarizedContent } }, 
       { 
         useFindAndModify: false,
         new: true

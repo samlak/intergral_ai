@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react"
 
 export default function Train({ profileData }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [trainedData, setTrainedData] = useState(profileData.trained_data);
 
   const trainBot = async () => {
     setIsLoading(true);
@@ -25,16 +26,14 @@ export default function Train({ profileData }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        data: profileData,
-        profileId: profileData._id,
+        profileData,
       }),
     })
     .then((res) => res.json())
     .then(async (response) => {
       setIsLoading(false);
       if (response.status) {
-
-
+        setTrainedData(response.data.trained_data);
         toast({
           title: "Submitted successfully",
           description: (
@@ -75,7 +74,7 @@ export default function Train({ profileData }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="text-center">
-        {!profileData.trained_data ?
+        {!trainedData ?
           <Button className="h-9 px-6" onClick={trainBot} disabled={isLoading}>
             { isLoading && <Loader2 className="mr-1 h-4 w-4 animate-spin" /> }
             {"Train Chatbot"}
